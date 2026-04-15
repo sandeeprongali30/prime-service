@@ -1,6 +1,13 @@
 terraform {
   required_version = ">= 1.5.0"
 
+    backend "s3" {
+    bucket         = "prime-service-terraform-state-01"
+    key            = "dev/terraform.tfstate"
+    region         = "eu-central-1"
+    dynamodb_table = "terraform-locks"
+  }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
