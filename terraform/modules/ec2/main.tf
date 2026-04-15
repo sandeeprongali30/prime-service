@@ -66,6 +66,7 @@ resource "aws_instance" "this" {
   vpc_security_group_ids = [aws_security_group.vpn_sg.id]
   iam_instance_profile   = aws_iam_instance_profile.ssm_profile.name
   user_data              = file(var.user_data_path)
+  user_data_replace_on_change = true
   tags = merge(
     {
       Name = var.name
