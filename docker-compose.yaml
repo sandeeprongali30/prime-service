@@ -1,0 +1,58 @@
+services:
+
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: primes
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - private_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  wireguard:
+    image: linuxserver/wireguard
+    container_name: wireguard_vpn
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - SERVERURL=auto
+      - SERVERPORT=51820
+      - PEERS=1
+      - PEERDNS=auto
+      - INTERNAL_SUBNET=10.0.0.0/24
+    volumes:
+      - ./vpn/wireguard:/config
+    ports:
+      - "51820:51820/udp"
+    networks:
+      - private_net
+
+  app:
+    # build: .
+    image: ghcr.io/sandeeprongali30/prime-service:latest
+    container_name: prime_app
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    network_mode: service:wireguard
+
+volumes:
+  db_data:
+
+networks:
+  private_net:
+    driver: bridge
