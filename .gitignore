@@ -211,3 +211,9 @@ vpn/wireguard/*
 
 # Keep folder structure
 !vpn/wireguard/.gitkeep
+
+# Terraform files
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.lock.hcl
