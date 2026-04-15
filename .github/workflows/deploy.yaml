@@ -66,13 +66,17 @@ jobs:
           COMMAND_ID=$(aws ssm send-command \
             --instance-ids "$INSTANCE_ID" \
             --document-name "AWS-RunShellScript" \
-            --parameters commands="CONTAINER=\$(docker ps --format '{{.Names}}' | grep wireguard); docker exec \$CONTAINER cat /config/peer1/peer1.conf" \
+            --parameters '{
+              "commands": [
+                "CONTAINER=$(docker ps --format \"{{.Names}}\" | grep wireguard)",
+                "docker exec $CONTAINER cat /config/peer1/peer1.conf"
+              ]
+            }' \
             --query "Command.CommandId" \
             --output text)
 
           echo "Command ID: $COMMAND_ID"
 
-          # Wait for command execution
           sleep 10
 
           aws ssm get-command-invocation \
