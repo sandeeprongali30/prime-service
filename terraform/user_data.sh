@@ -1,3 +1,5 @@
+#!/bin/bash
+
 set -e
 
 echo "Starting EC2 setup..."
